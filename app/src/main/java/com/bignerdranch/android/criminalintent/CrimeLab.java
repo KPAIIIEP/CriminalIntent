@@ -23,6 +23,7 @@ public class CrimeLab {
             Crime crime = new Crime();
             crime.setTitle("Преступление #" + i);
             crime.setSolved(i % 2 == 0); // Для каждого второго объекта
+            crime.setRequiresPolice(i % 2 == 0); // Для каждого второго объекта
             mCrimes.add(crime);
         }
     }
