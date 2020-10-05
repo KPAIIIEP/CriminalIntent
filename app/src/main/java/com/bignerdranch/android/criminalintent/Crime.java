@@ -12,11 +12,7 @@ public class Crime {
     private String mSuspect;
 
     public Crime() {
-        this(UUID.randomUUID());
-    }
-
-    public Crime(UUID id) {
-        mId = id;
+        mId = UUID.randomUUID();
         mDate = new Date();
     }
 
