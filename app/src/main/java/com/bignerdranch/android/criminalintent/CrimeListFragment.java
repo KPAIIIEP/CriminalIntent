@@ -26,6 +26,7 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
+    private int adapterPosition;
     private boolean mSubtitleVisible;
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
     private TextView mEmptyTextView;
@@ -124,8 +125,8 @@ public class CrimeListFragment extends Fragment {
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
+            mAdapter.notifyItemChanged(adapterPosition);
             mAdapter.setCrimes(crimes);
-            mAdapter.notifyDataSetChanged();
         }
         if (mAdapter.getItemCount() != 0) {
             mEmptyTextView.setVisibility(View.GONE);
@@ -162,6 +163,7 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
+            adapterPosition = getAdapterPosition();
             Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
             startActivity(intent);
         }
