@@ -8,14 +8,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,8 +26,6 @@ public class CrimeListFragment extends Fragment {
     private int adapterPosition;
     private boolean mSubtitleVisible;
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
-    private TextView mEmptyTextView;
-    private Button mNewCrimeButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,17 +37,6 @@ public class CrimeListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
-        mEmptyTextView = (TextView) view.findViewById(R.id.empty_text_view);
-        mNewCrimeButton = (Button) view.findViewById(R.id.new_crime_button);
-        mNewCrimeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Crime crime = new Crime();
-                CrimeLab.get(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-                startActivity(intent);
-            }
-        });
         mCrimeRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         if (savedInstanceState != null) {
@@ -109,8 +93,7 @@ public class CrimeListFragment extends Fragment {
     private void updateSubtitle() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         int crimeCount = crimeLab.getCrimes().size();
-        String subtitle = getResources()
-                .getQuantityString(R.plurals.subtitle_plural, crimeCount, crimeCount);
+        String subtitle = getString(R.string.subtitle_format, crimeCount);
         if (!mSubtitleVisible) {
             subtitle = null;
         }
@@ -128,13 +111,6 @@ public class CrimeListFragment extends Fragment {
             mAdapter.notifyItemChanged(adapterPosition);
             mAdapter.setCrimes(crimes);
         }
-        if (mAdapter.getItemCount() != 0) {
-            mEmptyTextView.setVisibility(View.GONE);
-            mNewCrimeButton.setVisibility(View.GONE);
-        } else {
-            mEmptyTextView.setVisibility(View.VISIBLE);
-            mNewCrimeButton.setVisibility(View.VISIBLE);
-        }
         updateSubtitle();
     }
 
@@ -144,8 +120,8 @@ public class CrimeListFragment extends Fragment {
         private ImageView mSolvedImageView;
         private Crime mCrime;
 
-        public CrimeHolder(LayoutInflater inflater, ViewGroup parent, int layoutId) {
-            super(inflater.inflate(layoutId, parent, false));
+        public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
+            super(inflater.inflate(R.layout.list_item_crime, parent, false));
             itemView.setOnClickListener(this);
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
@@ -156,8 +132,7 @@ public class CrimeListFragment extends Fragment {
         public void bind(Crime crime) {
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
-            DateFormat df = new SimpleDateFormat("EEEE, MMM dd, YYYY");
-            mDateTextView.setText(df.format(mCrime.getDate()));
+            mDateTextView.setText(mCrime.getDate().toString());
             mSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
         }
 
@@ -187,10 +162,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public CrimeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            if (viewType == 1) {
-                return new CrimeHolder(layoutInflater, parent, R.layout.list_item_crime_police);
-            }
-            return new CrimeHolder(layoutInflater, parent, R.layout.list_item_crime);
+            return new CrimeHolder(layoutInflater, parent);
         }
 
         @Override
