@@ -111,6 +111,18 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        mTimeButton = (Button) v.findViewById(R.id.crime_time);
+        mTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager = getFragmentManager();
+                TimePickerFragment dialog = TimePickerFragment.newInstance(mCrime.getDate());
+                //TimePickerFragment dialog = new TimePickerFragment();
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
+                dialog.show(manager, DIALOG_TIME);
+            }
+        });
+
         mSolvedCheckBox = (CheckBox)v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
         mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -184,6 +196,10 @@ public class CrimeFragment extends Fragment {
             } finally {
                 c.close();
             }
+        }
+        if (requestCode == REQUEST_TIME) {
+            String time = (String) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+            updateTime(time);
         }
         if (requestCode == REQUEST_TIME) {
             String time = (String) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
