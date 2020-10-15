@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 
 import androidx.appcompat.app.AlertDialog;
@@ -17,10 +19,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class DatePickerFragment extends DialogFragment {
-    private static final String ARG_DATE = "date";
+    private static final String ARG_DATE = "DialogDate";
     public static final String EXTRA_DATE = "com.bignerdranch.android.criminalintent.date";
 
     private DatePicker mDatePicker;
+    private Button mButtonOk;
 
     public static DatePickerFragment newInstance(Date date) {
         Bundle args = new Bundle();
@@ -31,8 +34,12 @@ public class DatePickerFragment extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Date date = (Date) getArguments().getSerializable(ARG_DATE);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+//    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//        Date date = (Date) getArguments().getSerializable(ARG_DATE);
+        Date date = (Date) getActivity().getIntent().getSerializableExtra(ARG_DATE);
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         int year = calendar.get(Calendar.YEAR);
@@ -44,21 +51,38 @@ public class DatePickerFragment extends DialogFragment {
         mDatePicker = (DatePicker) v.findViewById(R.id.dialog_date_picker);
         mDatePicker.init(year, month, day, null);
 
-        return new AlertDialog.Builder(getActivity())
-                .setView(v)
-                .setTitle(R.string.date_picker_title)
-                .setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                int year = mDatePicker.getYear();
-                                int month = mDatePicker.getMonth();
-                                int day = mDatePicker.getDayOfMonth();
-                                Date date = new GregorianCalendar(year, month, day).getTime();
-                                sendResult(Activity.RESULT_OK, date);
-                            }
-                        })
-                .create();
+        mButtonOk = (Button) v.findViewById(R.id.ok_date);
+        mButtonOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int year = mDatePicker.getYear();
+                int month = mDatePicker.getMonth();
+                int day = mDatePicker.getDayOfMonth();
+                Date date = new GregorianCalendar(year, month, day).getTime();
+                Intent intent = new Intent();
+                intent.putExtra(ARG_DATE, date);
+                getActivity().setResult(Activity.RESULT_OK, intent);
+                //sendResult(Activity.RESULT_OK, date);
+                getActivity().finish();
+            }
+        });
+
+//        return new AlertDialog.Builder(getActivity())
+//                .setView(v)
+//                .setTitle(R.string.date_picker_title)
+//                .setPositiveButton(android.R.string.ok,
+//                        new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                int year = mDatePicker.getYear();
+//                                int month = mDatePicker.getMonth();
+//                                int day = mDatePicker.getDayOfMonth();
+//                                Date date = new GregorianCalendar(year, month, day).getTime();
+//                                sendResult(Activity.RESULT_OK, date);
+//                            }
+//                        })
+//                .create();
+        return v;
     }
 
     private void sendResult(int resultCode, Date date) {
