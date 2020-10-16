@@ -11,4 +11,10 @@
     <string name="show_subtitle">Показать кол-во</string>
     <string name="hide_subtitle">Скрыть кол-во</string>
     <string name="subtitle_format">%1$d crimes</string>
+    <plurals name="subtitle_plural">
+        <item quantity="one">%1$d преступление</item>
+        <item quantity="few">%1$d преступления</item>
+        <item quantity="many">%1$d преступлений</item>
+        <item quantity="other">%1$d преступлений</item>
+    </plurals>
 </resources>
