@@ -135,6 +135,13 @@ public class CrimeListFragment extends Fragment {
             mEmptyTextView.setVisibility(View.VISIBLE);
             mNewCrimeButton.setVisibility(View.VISIBLE);
         }
+        if (mAdapter.getItemCount() != 0) {
+            mEmptyTextView.setVisibility(View.GONE);
+            mNewCrimeButton.setVisibility(View.GONE);
+        } else {
+            mEmptyTextView.setVisibility(View.VISIBLE);
+            mNewCrimeButton.setVisibility(View.VISIBLE);
+        }
         updateSubtitle();
     }
 
