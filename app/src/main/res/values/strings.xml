@@ -11,6 +11,12 @@
     <string name="show_subtitle">Показать кол-во</string>
     <string name="hide_subtitle">Скрыть кол-во</string>
     <string name="subtitle_format">%1$d crimes</string>
+    <plurals name="subtitle_plural">
+        <item quantity="one">%1$d преступление</item>
+        <item quantity="few">%1$d преступления</item>
+        <item quantity="many">%1$d преступлений</item>
+        <item quantity="other">%1$d преступлений</item>
+    </plurals>
     <string name="crime_suspect_text">Выбрать подозреваемого</string>
     <string name="crime_report_text">Отправить отчет</string>
     <string name="crime_report">%1$s! The crime was discovered on %2$s. %3$s, and %4$s</string>
