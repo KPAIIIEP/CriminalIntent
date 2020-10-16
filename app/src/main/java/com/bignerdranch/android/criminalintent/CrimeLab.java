@@ -50,6 +50,8 @@ public class CrimeLab {
         mDatabase.insert(CrimeTable.NAME, null, values);
     }
 
+    public void deleteCrime(Crime c) { mCrimes.remove(c); }
+
     public Crime getCrime(UUID id) {
         CrimeCursorWrapper cursor = queryCrimes(
                 CrimeTable.Cols.UUID + " = ?",
