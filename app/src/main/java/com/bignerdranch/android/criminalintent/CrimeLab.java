@@ -50,7 +50,13 @@ public class CrimeLab {
         mDatabase.insert(CrimeTable.NAME, null, values);
     }
 
-    public void deleteCrime(Crime c) { mCrimes.remove(c); }
+    public void deleteCrime(Crime crime) {
+        String uuidString = crime.getId().toString();
+        ContentValues values = getContentValues(crime);
+        mDatabase.delete(CrimeTable.NAME,
+                CrimeTable.Cols.UUID + " = ?",
+                new String[] { uuidString });
+    }
 
     public Crime getCrime(UUID id) {
         CrimeCursorWrapper cursor = queryCrimes(
