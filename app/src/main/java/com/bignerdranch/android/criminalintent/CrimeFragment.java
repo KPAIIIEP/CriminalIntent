@@ -21,6 +21,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -33,7 +34,7 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_DATE = 0;
     private static final String DIALOG_TIME = "DialogTime";
     private static final int REQUEST_TIME = 1;
-    private static final int REQUEST_CONTACT = 1;
+    private static final int REQUEST_CONTACT = 2;
 
     private Crime mCrime;
     private EditText mTitleField;
@@ -151,11 +152,17 @@ public class CrimeFragment extends Fragment {
         mReportButton = (Button) v.findViewById(R.id.crime_report);
         mReportButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
-                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
-                i = Intent.createChooser(i, getString(R.string.send_report));
+                Intent i = ShareCompat.IntentBuilder.from(getActivity())
+                        .setType("text/plain")
+                        .setText(getCrimeReport())
+                        .setSubject(getString(R.string.crime_report_subject))
+                        .setChooserTitle(R.string.send_report)
+                        .createChooserIntent();
+//                Intent i = new Intent(Intent.ACTION_SEND);
+//                i.setType("text/plain");
+//                i.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+//                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+//                i = Intent.createChooser(i, getString(R.string.send_report));
                 startActivity(i);
             }
         });
@@ -196,11 +203,14 @@ public class CrimeFragment extends Fragment {
             Date date = (Date) data.getSerializableExtra(DIALOG_DATE);
             mCrime.setDate(date);
             updateDate();
+        } else if (requestCode == REQUEST_TIME) {
+            String time = (String) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
+            updateTime(time);
         } else if (requestCode == REQUEST_CONTACT && data != null) {
             Uri contactUri = data.getData();
             // Определение полей, значения которых должны быть
             // возвращены запросом.
-            String[] queryFields = new String[] { ContactsContract.Contacts.DISPLAY_NAME };
+            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
             // Выполнение запроса - contactUri здесь выполняет функции
             // условия "where"
             Cursor c = getActivity().getContentResolver()
@@ -218,14 +228,6 @@ public class CrimeFragment extends Fragment {
             } finally {
                 c.close();
             }
-        }
-        if (requestCode == REQUEST_TIME) {
-            String time = (String) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-            updateTime(time);
-        }
-        if (requestCode == REQUEST_TIME) {
-            String time = (String) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-            updateTime(time);
         }
     }
 
