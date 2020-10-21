@@ -1,5 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,7 +22,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -35,6 +38,7 @@ public class CrimeFragment extends Fragment {
     private static final String DIALOG_TIME = "DialogTime";
     private static final int REQUEST_TIME = 1;
     private static final int REQUEST_CONTACT = 2;
+    private static final int REQUEST_PHONE = 3;
 
     private Crime mCrime;
     private EditText mTitleField;
@@ -43,6 +47,7 @@ public class CrimeFragment extends Fragment {
     private CheckBox mSolvedCheckBox;
     private Button mSuspectButton;
     private Button mReportButton;
+    private Button mDialButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -167,6 +172,14 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+
+        mDialButton = (Button) v.findViewById(R.id.crime_dial);
+        mDialButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startActivityForResult(pickContact, REQUEST_PHONE);
+            }
+        });
+
         PackageManager packageManager = getActivity().getPackageManager();
         if (packageManager.resolveActivity(pickContact,
                 PackageManager.MATCH_DEFAULT_ONLY) == null) {
@@ -227,6 +240,39 @@ public class CrimeFragment extends Fragment {
                 mSuspectButton.setText(suspect);
             } finally {
                 c.close();
+            }
+        } else if (requestCode == REQUEST_PHONE && data != null) {
+            ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.READ_CONTACTS}, 3);
+            Uri contactUri = data.getData();
+            String[] queryFields = new String[]{ContactsContract.Contacts._ID};
+            Cursor c = getActivity().getContentResolver()
+                    .query(contactUri, queryFields, null, null, null);
+            try {
+                if (c.getCount() == 0) {
+                    return;
+                }
+                c.moveToFirst();
+                String  whereClause = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = "
+                        + c.getString(0);
+                queryFields = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
+                Cursor phones = getActivity().getContentResolver().query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                queryFields,
+                                whereClause,
+                                null,
+                                null);
+                if (phones.getCount() == 0) {
+                    return;
+                }
+                phones.moveToFirst();
+                String number = phones.getString(0);
+                Intent dialContact = new Intent(Intent.ACTION_DIAL);
+                dialContact.setData(Uri.parse("tel:" + number));
+                startActivity(dialContact);
+                phones.close();
+            } finally {
+                c.close();
+
             }
         }
     }
