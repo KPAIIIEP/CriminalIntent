@@ -192,9 +192,9 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemViewType(int position) {
             Crime crime = mCrimes.get(position);
-            if (crime.isRequiresPolice()) {
-                return 1;
-            }
+//            if (crime.isRequiresPolice()) {
+//                return 1;
+//            }
             return 0;
         }
 

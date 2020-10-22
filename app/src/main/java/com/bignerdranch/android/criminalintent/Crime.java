@@ -10,7 +10,6 @@ public class Crime {
     private boolean mSolved;
     private boolean mRequiresPolice;
     private String mSuspect;
-    private boolean mRequiresPolice;
 
     public Crime() {
         this(UUID.randomUUID());
@@ -63,13 +62,5 @@ public class Crime {
 
     public String getPhotoFilename() {
         return "IMG_" + getId().toString() + ".jpg";
-    }
-
-    public boolean isRequiresPolice() {
-        return mRequiresPolice;
-    }
-
-    public void setRequiresPolice(boolean requiresPolice) {
-        mRequiresPolice = requiresPolice;
     }
 }
